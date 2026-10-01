@@ -10,6 +10,5 @@ jobs:
   helloprint:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "Hello!"
-      - run: whoami
-      - run: pwd
+      - run: echo "내 코드 있니?"
+      - run: ls
