@@ -1,0 +1,20 @@
+#어떤 작업인지 이름달기
+name: HTML 검사
+
+# 언제 실행하는지 
+on: [push]
+
+# 어떤 작업할지 알려줘!
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      #1. 내 코드 가져오기(저장소)
+      - uses: actions/checkout@v6
+      #2. 검사 도구 실행에 필요한 node.js준비
+      - uses: actions/setup-node@v4
+        with:
+          node-version:'22'
+      #3. HTML 검사
+      - run: npx --yes html-validate --rule close-order:error index.html
