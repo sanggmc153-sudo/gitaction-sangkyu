@@ -189,3 +189,11 @@ scp(파일전송, SSH) 22번 포트 사용
 웹서버 있는지 확인(Nginx)
 
 EC2계정 ubuntu 아니면 꼭 계정확인 var/www/html
+
+모바텀으로 가서 EC2 접속해서 권한 확인 명령어 
+ls -ld 폴더위치작성!
+ls -ld /var/www/html
+
+권한 변경 (chmod)
+유저 변경 (chwon)
+sudo chown ubuntu:ubuntu /var/www/html
