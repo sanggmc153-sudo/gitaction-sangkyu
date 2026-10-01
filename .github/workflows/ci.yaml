@@ -10,5 +10,13 @@ jobs:
   helloprint:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "내 코드 있니?"
+      - run: echo "가져오기 전"
       - run: ls
+
+      # 코드 가져오는 걸 맡길께!
+      # actions/checkout
+      - uses: actions/checkout@v6
+      - run: echo "가져온 후"
+      - run: ls
+
+        
