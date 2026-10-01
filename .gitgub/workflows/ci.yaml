@@ -1,0 +1,13 @@
+# 어떤 작업인지 이름달기
+
+name: 나의 첫 CI
+
+# 언제 실행하는지
+on: [push]
+
+# 어떤 작업할지 알려줘!
+jobs:
+  helloprint:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Hello!"
