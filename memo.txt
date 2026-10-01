@@ -76,4 +76,116 @@ jobs:
       - run: echo "내 코드 있니?"
       - run: ls
      
-#------------------------------------------
+#-------------------------------------------
+깃 저장소에서 내 코드 가져오기(index.html)
+#어떤 작업인지 이름달기
+name: 나의 첫 CI
+
+# 언제 실행하는지 
+on: [push]
+
+# 어떤 작업할지 알려줘!
+jobs:
+  helloprint:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "가져오기 전"
+      - run: ls
+
+      # 코드 가져오는 걸 맡길께!
+      # actions/checkout
+      - uses: actions/checkout@v6
+
+      - run: echo "가져 온 후"
+      - run: ls
+     
+#--------------------------------------
+코드를 진짜 검사하는지 확인 
+
+
+#--------------------------------------
+배포를 할 때 깃허브 pages 안에 두 가지 방식 
+Deploy from a branch 
+ - 기본적으로 지정한 브랜치HTML 파일을 사이트로 배포!
+ - /root 폴더 안에 index.html 파일이름도 고정해야된다!
+ - save를 꼭 누른다.
+
+Github Actions 배포 
+ - push -> HTML 검사 -> 성공하면 배포/실패하면 중단
+ - 내가 원하는 데로 yaml파일을 작성해서 배포하고싶을때!
+
+name: HTML 검사 후 배포
+
+# main 브랜치에 push하면 실행
+on:
+  push:
+    branches: [main]
+
+# 배포에 필요한 권한
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 배포 작업이 겹치지 않게 설정
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      # 1. 저장소 코드 가져오기
+      - uses: actions/checkout@v6
+
+      # 2. Node.js 준비
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # 3. HTML 검사: 실패하면 이후 단계는 실행 안 됨
+      - name: HTML 검사
+        run: npx --yes html-validate --rule close-order:error index.html
+
+      # 4. GitHub Pages 준비
+      - uses: actions/configure-pages@v5
+
+      # 5. 배포할 파일만 별도 폴더에 담기
+      - name: 배포 파일 준비
+        run: |
+          mkdir -p public
+          cp index.html public/
+
+      # 6. 배포 파일 업로드
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+      # 7. 사이트 배포
+      - name: 사이트 배포
+        id: deployment
+        uses: actions/deploy-pages@v4
+#===================================================
+CD
+ - 검사한 코드를 실제 서비스에 배포하는 과정!
+ - 코드를 올리면 자동으로 CI검사를 하고 통과 하면 CD 실제
+   사이트까지 바꿔주는 역할 
+
+접속하는 서버들이 key들을 가지고 있다면 
+Actions secrets and variables 에 저장해서 쓴다.(내컴퓨터 환경변수설정)
+저장소 선택 -> settings -> 왼쪽 메뉴 아래 secrets and variables ->Repository secrets
+에 각각 하나씩 저장한다.
+파일 올리기는 안된다 직접 복사해서 붙여넣기한다.
+
+AWS EC2는 항상 보안그룹 -> 외부에서 접근(인바운드규칙!)
+scp(파일전송, SSH) 22번 포트 사용
+
+웹서버 있는지 확인(Nginx)
+
+EC2계정 ubuntu 아니면 꼭 계정확인 var/www/html

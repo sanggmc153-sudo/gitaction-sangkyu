@@ -1,20 +1,23 @@
 #어떤 작업인지 이름달기
-name: HTML 검사
+name: EC2배포
 
 # 언제 실행하는지 
-on: [push]
+# main 브랜치에서 push하면 실행해!
+on: 
+  push:
+    branches: [main]
 
 # 어떤 작업할지 알려줘!
 jobs:
-  check:
+  deploy:
     runs-on: ubuntu-latest
-
     steps:
-      #1. 내 코드 가져오기(저장소)
       - uses: actions/checkout@v6
-      #2. 검사 도구 실행에 필요한 node.js준비
-      - uses: actions/setup-node@v4
-        with:
-          node-version:'22'
-      #3. HTML 검사
-      - run: npx --yes html-validate --rule close-order:error index.html
+        # scp-action 파일전송도구! (서버 전송가능하다!)
+      - uses: appleboy/scp-action@v0.1.7
+        with: # 필요한 정보들을 저장한다
+          host: ${{ secrets.EC2_HOST }}      #어디로 보낼지?
+          username: ${{ secrets.EC2_USER }}  #누구로?
+          key: ${{ secrets.EC2_KEY }}        #어떤 키로 접속?
+          source: index.html                 #어떤파일보낼래?
+          target: /var/www/html              # 어디에 놓을지
